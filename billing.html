@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ GLASSMORPHISM FORM ============ */
+        .glass-wrapper {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            overflow: hidden;
+        }
+
+        .glass-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -80px;
+            right: -80px;
+        }
+
+        .glass-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            bottom: -60px;
+            left: -60px;
+        }
+
+        .glass-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            z-index: 1;
+        }
+
+        .glass-title {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .glass-title i { margin-right: 8px; }
+
+        .glass-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .glass-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .glass-field label {
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .glass-field label .icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .glass-field label .required { color: #f44336; margin-left: 2px; }
+
+        .glass-input, .glass-select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e8eaf6;
+            border-radius: 12px;
+            background: #fafbff;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .glass-input:focus, .glass-select:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .glass-input::placeholder { color: #b0b0b0; }
+
+        .glass-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px;
+            padding-right: 45px;
+        }
+
+        .glass-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px dashed #c5cae9;
+        }
+
+        .glass-btn-save {
+            flex: 1;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .glass-btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .glass-btn-cancel {
+            flex: 1;
+            padding: 16px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .glass-btn-cancel:hover {
+            border-color: #999;
+            color: #333;
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        /* Total Preview */
+        .total-preview {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8eaf6 100%);
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .total-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .total-item .label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .total-item .value {
+            font-size: 20px;
+            color: #1a237e;
+            font-weight: 700;
+        }
+
+        .total-item .value.green { color: #2e7d32; }
+        .total-item .value.red { color: #c62828; }
+
+        /* Status Badges */
+        .status-paid { background: #E8F5E9; color: #2E7D32; }
+        .status-unpaid { background: #FFEBEE; color: #C62828; }
+        .status-partial { background: #FFF3E0; color: #E65100; }
+
+        @media (max-width: 600px) {
+            .glass-grid { grid-template-columns: 1fr; }
+            .glass-actions { flex-direction: column; }
+            .total-preview { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html" class="active"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Billing</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Billing Management</h1>
+                <p>Create and manage patient bills</p>
+            </div>
+
+            <!-- Glassmorphism Billing Form -->
+            <div class="glass-wrapper">
+                <div class="glass-card">
+                    <div class="glass-title">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span id="formTitle">Create New Bill</span>
+                    </div>
+
+                    <form id="billingForm" onsubmit="saveBill(event)">
+                        <input type="hidden" id="billId">
+
+                        <div class="glass-grid">
+                            <!-- Patient Name -->
+                            <div class="glass-field" style="grid-column: 1 / -1;">
+                                <label>
+                                    <span class="icon"><i class="fas fa-user"></i></span>
+                                    Patient Name <span class="required">*</span>
+                                </label>
+                                <input type="text" id="patientName" class="glass-input" 
+                                       placeholder="Enter patient name" required
+                                       style="text-transform: capitalize;">
+                            </div>
+
+                            <!-- Consultation Fee -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-stethoscope"></i></span>
+                                    Consultation Fee (₹)
+                                </label>
+                                <input type="number" id="consultationFee" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Medicine Charges -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-pills"></i></span>
+                                    Medicine Charges (₹)
+                                </label>
+                                <input type="number" id="medicineCharges" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Lab Charges -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-flask"></i></span>
+                                    Lab Charges (₹)
+                                </label>
+                                <input type="number" id="labCharges" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Room Charges -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-bed"></i></span>
+                                    Room Charges (₹)
+                                </label>
+                                <input type="number" id="roomCharges" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Other Charges -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-plus-circle"></i></span>
+                                    Other Charges (₹)
+                                </label>
+                                <input type="number" id="otherCharges" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Amount Paid -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-money-bill-wave"></i></span>
+                                    Amount Paid (₹)
+                                </label>
+                                <input type="number" id="amountPaid" class="glass-input" 
+                                       placeholder="0.00" min="0" step="0.01" value="0"
+                                       oninput="calculateTotal()">
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-credit-card"></i></span>
+                                    Payment Method
+                                </label>
+                                <select id="paymentMethod" class="glass-select">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Card">Card</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Insurance">Insurance</option>
+                                    <option value="Online">Online</option>
+                                </select>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                                    Payment Status
+                                </label>
+                                <select id="paymentStatus" class="glass-select">
+                                    <option value="Unpaid">Unpaid</option>
+                                    <option value="Partial">Partial</option>
+                                    <option value="Paid">Paid</option>
+                                </select>
+                            </div>
+
+                            <!-- Bill Date -->
+                            <div class="glass-field" style="grid-column: 1 / -1;">
+                                <label>
+                                    <span class="icon"><i class="fas fa-calendar"></i></span>
+                                    Bill Date
+                                </label>
+                                <input type="date" id="billDate" class="glass-input" required>
+                            </div>
+
+                            <!-- Total Preview -->
+                            <div class="total-preview">
+                                <div class="total-item">
+                                    <span class="label">Total Amount</span>
+                                    <span class="value" id="totalDisplay">₹0.00</span>
+                                </div>
+                                <div class="total-item">
+                                    <span class="label">Balance</span>
+                                    <span class="value red" id="balanceDisplay">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="glass-actions">
+                            <button type="submit" class="glass-btn-save">
+                                <i class="fas fa-save"></i> Save Bill
+                            </button>
+                            <button type="button" class="glass-btn-cancel" onclick="resetForm()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bills List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Bills List</h3>
+                    <input type="text" id="searchInput" placeholder="Search bills..." onkeyup="searchBills()">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <tr><td colspan="8" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/bills';
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // Calculate total and balance
+        function calculateTotal() {
+            const consultation = parseFloat(document.getElementById('consultationFee').value) || 0;
+            const medicine = parseFloat(document.getElementById('medicineCharges').value) || 0;
+            const lab = parseFloat(document.getElementById('labCharges').value) || 0;
+            const room = parseFloat(document.getElementById('roomCharges').value) || 0;
+            const other = parseFloat(document.getElementById('otherCharges').value) || 0;
+            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
+
+            const total = consultation + medicine + lab + room + other;
+            const balance = total - paid;
+
+            document.getElementById('totalDisplay').textContent = '₹' + total.toFixed(2);
+            const balanceEl = document.getElementById('balanceDisplay');
+            balanceEl.textContent = '₹' + balance.toFixed(2);
+            balanceEl.className = 'value ' + (balance <= 0 ? 'green' : 'red');
+        }
+
+        async function loadBills() {
+            try {
+                const res = await fetch(API_URL);
+                const bills = await res.json();
+                displayBills(bills);
+            } catch (error) {
+                const tbody = document.getElementById('billingTableBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="no-data" style="color:red;">⚠️ Backend not running!</td></tr>';
+            }
+        }
+
+        function displayBills(bills) {
+            const tbody = document.getElementById('billingTableBody');
+            if (!tbody) return;
+
+            if (bills.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No bills found. Create one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = bills.map(b => {
+                let statusClass = 'status-unpaid';
+                if (b.payment_status === 'Paid') statusClass = 'status-paid';
+                if (b.payment_status === 'Partial') statusClass = 'status-partial';
+
+                return `
+                <tr>
+                    <td>${b.id}</td>
+                    <td><strong>${b.patient_name || ''}</strong></td>
+                    <td>₹${parseFloat(b.total_amount || 0).toFixed(2)}</td>
+                    <td>₹${parseFloat(b.amount_paid || 0).toFixed(2)}</td>
+                    <td>₹${parseFloat(b.balance || 0).toFixed(2)}</td>
+                    <td>${b.payment_method || '-'}</td>
+                    <td><span class="status-badge ${statusClass}">${b.payment_status}</span></td>
+                    <td>
+                        <button class="btn-edit" onclick="editBill(${b.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteBill(${b.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        async function saveBill(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('billId').value;
+            const bill = {
+                patientName: document.getElementById('patientName').value,
+                consultationFee: parseFloat(document.getElementById('consultationFee').value) || 0,
+                medicineCharges: parseFloat(document.getElementById('medicineCharges').value) || 0,
+                labCharges: parseFloat(document.getElementById('labCharges').value) || 0,
+                roomCharges: parseFloat(document.getElementById('roomCharges').value) || 0,
+                otherCharges: parseFloat(document.getElementById('otherCharges').value) || 0,
+                amountPaid: parseFloat(document.getElementById('amountPaid').value) || 0,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                paymentStatus: document.getElementById('paymentStatus').value,
+                billDate: document.getElementById('billDate').value
+            };
+
+            try {
+                const url = id ? `${API_URL}/${id}` : API_URL;
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bill)
+                });
+
+                if (res.ok) {
+                    showToast(id ? '✅ Bill updated!' : '✅ Bill created!');
+                    resetForm();
+                    loadBills();
+                } else {
+                    showToast('❌ Error saving!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        async function editBill(id) {
+            try {
+                const res = await fetch(API_URL);
+                const bills = await res.json();
+                const b = bills.find(x => x.id === id);
+                
+                if (!b) return;
+
+                document.getElementById('billId').value = b.id;
+                document.getElementById('patientName').value = b.patient_name || '';
+                document.getElementById('consultationFee').value = b.consultation_fee || 0;
+                document.getElementById('medicineCharges').value = b.medicine_charges || 0;
+                document.getElementById('labCharges').value = b.lab_charges || 0;
+                document.getElementById('roomCharges').value = b.room_charges || 0;
+                document.getElementById('otherCharges').value = b.other_charges || 0;
+                document.getElementById('amountPaid').value = b.amount_paid || 0;
+                document.getElementById('paymentMethod').value = b.payment_method || 'Cash';
+                document.getElementById('paymentStatus').value = b.payment_status || 'Unpaid';
+                document.getElementById('billDate').value = b.bill_date ? b.bill_date.split('T')[0] : '';
+
+                document.getElementById('formTitle').textContent = 'Edit Bill';
+                calculateTotal();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('❌ Error loading!', true);
+            }
+        }
+
+        async function deleteBill(id) {
+            if (!confirm('Delete this bill?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('✅ Bill deleted!');
+                    loadBills();
+                } else {
+                    showToast('❌ Error deleting!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('billingForm').reset();
+            document.getElementById('billId').value = '';
+            document.getElementById('formTitle').textContent = 'Create New Bill';
+            document.getElementById('totalDisplay').textContent = '₹0.00';
+            document.getElementById('balanceDisplay').textContent = '₹0.00';
+            
+            // Set today's date
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function searchBills() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#billingTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+            loadBills();
+        });
+    </script>
+</body>
+</html>

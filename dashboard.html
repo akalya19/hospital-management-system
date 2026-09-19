@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Dashboard</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's what's happening today.</p>
+            </div>
+
+            <!-- STATS CARDS -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalPatients">0</h3>
+                        <span>Total Patients</span>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-green">
+                    <div class="stat-icon"><i class="fas fa-user-md"></i></div>
+                    <div class="stat-info">
+                        <h3>5</h3>
+                        <span>Total Doctors</span>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3>12</h3>
+                        <span>Appointments</span>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-red">
+                    <div class="stat-icon"><i class="fas fa-ambulance"></i></div>
+                    <div class="stat-info">
+                        <h3>8</h3>
+                        <span>Ambulances</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="patients.html" class="action-btn action-blue">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Patient</span>
+                    </a>
+                    <a href="doctors.html" class="action-btn action-green">
+                        <i class="fas fa-user-md"></i>
+                        <span>Add Doctor</span>
+                    </a>
+                    <a href="appointments.html" class="action-btn action-orange">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Book Appointment</span>
+                    </a>
+                    <a href="ambulance.html" class="action-btn action-red">
+                        <i class="fas fa-ambulance"></i>
+                        <span>Book Ambulance</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- RECENT PATIENTS -->
+            <div class="card">
+                <h3><i class="fas fa-clock"></i> Recent Patients</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Disease</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentPatientsBody">
+                            <tr><td colspan="6" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Load patients for dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/patients');
+                const patients = await res.json();
+                
+                // Update total count
+                const totalEl = document.getElementById('totalPatients');
+                if (totalEl) totalEl.textContent = patients.length;
+                
+                // Display recent patients
+                const tbody = document.getElementById('recentPatientsBody');
+                if (tbody) {
+                    if (patients.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="no-data">No patients yet</td></tr>';
+                    } else {
+                        tbody.innerHTML = patients.slice(0, 5).map(p => `
+                            <tr>
+                                <td>${p.id}</td>
+                                <td>${p.patient_name || p.name}</td>
+                                <td>${p.age}</td>
+                                <td>${p.gender}</td>
+                                <td>${p.phone}</td>
+                                <td>${p.disease || '-'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const tbody = document.getElementById('recentPatientsBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="no-data">⚠️ Backend not running</td></tr>';
+            }
+        });
+
+        function logout() {
+            window.location.href = 'index.html'; 
+        }
+    </script>
+</body>
+</html>

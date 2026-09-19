@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ MINIMAL FORM STYLES ============ */
+        .minimal-form {
+            max-width: 900px;
+        }
+
+        .minimal-form h3 {
+            color: #1a237e;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+
+        .minimal-field {
+            margin-bottom: 30px;
+        }
+
+        .minimal-field label {
+            display: block;
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .minimal-field label .required {
+            color: #f44336;
+            margin-left: 3px;
+        }
+
+        .minimal-input {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #c5cae9;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .minimal-input:focus {
+            outline: none;
+            border-bottom-color: #3f51b5;
+        }
+
+        .minimal-input::placeholder {
+            color: #b0b0b0;
+            font-style: italic;
+        }
+
+        .minimal-select {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #c5cae9;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f51b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+            background-size: 18px;
+            padding-right: 25px;
+        }
+
+        .minimal-select:focus {
+            outline: none;
+            border-bottom-color: #3f51b5;
+        }
+
+        .minimal-textarea {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #c5cae9;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.3s;
+        }
+
+        .minimal-textarea:focus {
+            outline: none;
+            border-bottom-color: #3f51b5;
+        }
+
+        .minimal-textarea::placeholder {
+            color: #b0b0b0;
+            font-style: italic;
+        }
+
+        .minimal-row {
+            display: grid;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .minimal-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .minimal-row-full {
+            grid-template-columns: 1fr;
+        }
+
+        .minimal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e8eaf6;
+        }
+
+        .btn-minimal-primary {
+            padding: 14px 35px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-minimal-primary:hover {
+            background: #0d1642;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+        }
+
+        .btn-minimal-secondary {
+            padding: 14px 35px;
+            background: transparent;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-minimal-secondary:hover {
+            border-color: #999;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .minimal-row-2 {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Check -->
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html" class="active"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Patients</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Patient Management</h1>
+                <p>Manage all patients in the hospital</p>
+            </div>
+
+            <!-- Minimal Add Patient Form -->
+            <div class="card">
+                <form id="patientForm" onsubmit="savePatient(event)" class="minimal-form">
+                    <h3 id="formTitle">Add New Patient</h3>
+                    
+                    <input type="hidden" id="patientId">
+
+                    <!-- Full Name -->
+                    <div class="minimal-row minimal-row-full">
+                        <div class="minimal-field">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" 
+                                   class="minimal-input" 
+                                   placeholder="Enter full name here" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Age & Gender -->
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Age <span class="required">*</span></label>
+                            <input type="number" id="age" 
+                                   class="minimal-input" 
+                                   placeholder="Age" 
+                                   required 
+                                   min="0" 
+                                   max="150">
+                        </div>
+                        <div class="minimal-field">
+                            <label>Gender <span class="required">*</span></label>
+                            <select id="gender" class="minimal-select" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Phone & Email -->
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" id="phone" 
+                                   class="minimal-input" 
+                                   placeholder="Phone number" 
+                                   required>
+                        </div>
+                        <div class="minimal-field">
+                            <label>Email</label>
+                            <input type="email" id="email" 
+                                   class="minimal-input" 
+                                   placeholder="Email">
+                        </div>
+                    </div>
+
+                    <!-- Blood Group -->
+                    <div class="minimal-row minimal-row-full">
+                        <div class="minimal-field">
+                            <label>Blood Group</label>
+                            <select id="bloodGroup" class="minimal-select">
+                                <option value="">Select</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="minimal-row minimal-row-full">
+                        <div class="minimal-field">
+                            <label>Address</label>
+                            <textarea id="address" 
+                                      class="minimal-textarea" 
+                                      rows="2"
+                                      placeholder="Full address"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 🆕 Disease -->
+                    <div class="minimal-row minimal-row-full">
+                        <div class="minimal-field">
+                            <label>Disease / Medical Condition</label>
+                            <input type="text" 
+                                   id="disease" 
+                                   class="minimal-input" 
+                                   placeholder="e.g. Fever, Diabetes, BP"
+                                   style="text-transform: capitalize;">
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="minimal-actions">
+                        <button type="submit" class="btn-minimal-primary">
+                            Save Patient
+                        </button>
+                        <button type="button" class="btn-minimal-secondary" onclick="resetForm()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Patient List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Patients List</h3>
+                    <input type="text" id="searchInput" placeholder="Search patients..." onkeyup="searchPatients()">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Blood</th>
+                                <th>Disease</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <tr><td colspan="8" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/patients';
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function loadPatients() {
+            try {
+                const res = await fetch(API_URL);
+                const patients = await res.json();
+                displayPatients(patients);
+            } catch (error) {
+                const tbody = document.getElementById('patientTableBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="no-data" style="color:red;">⚠️ Backend not running!</td></tr>';
+            }
+        }
+
+        function displayPatients(patients) {
+            const tbody = document.getElementById('patientTableBody');
+            if (!tbody) return;
+
+            if (patients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No patients found. Add one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = patients.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td><strong>${p.patient_name || p.name || ''}</strong></td>
+                    <td>${p.age}</td>
+                    <td>${p.gender}</td>
+                    <td>${p.phone}</td>
+                    <td>${p.blood_group || p.bloodGroup || '-'}</td>
+                    <td>${p.disease || '-'}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editPatient(${p.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deletePatient(${p.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function savePatient(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('patientId').value;
+            const patient = {
+                name: document.getElementById('name').value,
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                bloodGroup: document.getElementById('bloodGroup').value,
+                address: document.getElementById('address').value,
+                disease: document.getElementById('disease').value
+            };
+
+            try {
+                const url = id ? `${API_URL}/${id}` : API_URL;
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(patient)
+                });
+
+                if (res.ok) {
+                    showToast(id ? '✅ Patient updated!' : '✅ Patient added!');
+                    resetForm();
+                    loadPatients();
+                } else {
+                    showToast('❌ Error saving!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        async function editPatient(id) {
+            try {
+                const res = await fetch(API_URL);
+                const patients = await res.json();
+                const p = patients.find(x => x.id === id);
+                
+                if (!p) return;
+
+                document.getElementById('patientId').value = p.id;
+                document.getElementById('name').value = p.patient_name || p.name || '';
+                document.getElementById('age').value = p.age || '';
+                document.getElementById('gender').value = p.gender || '';
+                document.getElementById('phone').value = p.phone || '';
+                document.getElementById('email').value = p.email || '';
+                document.getElementById('bloodGroup').value = p.blood_group || p.bloodGroup || '';
+                document.getElementById('address').value = p.address || '';
+                document.getElementById('disease').value = p.disease || '';
+
+                document.getElementById('formTitle').textContent = 'Edit Patient';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('❌ Error loading!', true);
+            }
+        }
+
+        async function deletePatient(id) {
+            if (!confirm('Delete this patient?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('✅ Patient deleted!');
+                    loadPatients();
+                } else {
+                    showToast('❌ Error deleting!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('patientForm').reset();
+            document.getElementById('patientId').value = '';
+            document.getElementById('formTitle').textContent = 'Add New Patient';
+        }
+
+        function searchPatients() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#patientTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPatients();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .minimal-form { max-width: 900px; }
+        .minimal-form h3 {
+            color: #1a237e;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        .minimal-field { margin-bottom: 30px; }
+        .minimal-field label {
+            display: block;
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+        .minimal-field label .required { color: #f44336; margin-left: 3px; }
+        .minimal-input, .minimal-select {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #c5cae9;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .minimal-input:focus, .minimal-select:focus {
+            outline: none;
+            border-bottom-color: #3f51b5;
+        }
+        .minimal-input::placeholder { color: #b0b0b0; font-style: italic; }
+        .minimal-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f51b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+            background-size: 18px;
+            padding-right: 25px;
+        }
+        .minimal-row { display: grid; gap: 40px; margin-bottom: 30px; }
+        .minimal-row-2 { grid-template-columns: 1fr 1fr; }
+        .minimal-row-full { grid-template-columns: 1fr; }
+        .minimal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e8eaf6;
+        }
+        .btn-minimal-primary {
+            padding: 14px 35px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-minimal-primary:hover {
+            background: #0d1642;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+        }
+        .btn-minimal-secondary {
+            padding: 14px 35px;
+            background: transparent;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-minimal-secondary:hover { border-color: #999; color: #333; }
+        @media (max-width: 600px) {
+            .minimal-row-2 { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html" class="active"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Doctors</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Doctor Management</h1>
+                <p>Manage all doctors in the hospital</p>
+            </div>
+
+            <!-- Add Doctor Form -->
+            <div class="card">
+                <form id="doctorForm" onsubmit="saveDoctor(event)" class="minimal-form">
+                    <h3 id="formTitle">Add New Doctor</h3>
+                    <input type="hidden" id="doctorId">
+
+                    <div class="minimal-row minimal-row-full">
+                        <div class="minimal-field">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" class="minimal-input" 
+                                   placeholder="Dr. Full Name" required>
+                        </div>
+                    </div>
+                    <div class="minimal-row minimal-row-2">
+    <div class="minimal-field">
+        <label>Specialization <span class="required">*</span></label>
+        <select id="specialization" class="minimal-select" required>
+            <option value="">Select Specialization</option>
+            <option value="General Physician">General Physician</option>
+            <option value="Cardiologist">Cardiologist (Heart)</option>
+            <option value="Neurologist">Neurologist (Brain)</option>
+            <option value="Orthopedic">Orthopedic (Bones)</option>
+            <option value="Pediatrician">Pediatrician (Children)</option>
+            <option value="Gynecologist">Gynecologist (Women)</option>
+            <option value="Dermatologist">Dermatologist (Skin)</option>
+            <option value="ENT Specialist">ENT Specialist (Ear/Nose/Throat)</option>
+            <option value="Ophthalmologist">Ophthalmologist (Eye)</option>
+            <option value="Psychiatrist">Psychiatrist (Mental Health)</option>
+            <option value="Dentist">Dentist (Teeth)</option>
+            <option value="Urologist">Urologist (Urinary)</option>
+            <option value="Oncologist">Oncologist (Cancer)</option>
+            <option value="Gastroenterologist">Gastroenterologist (Digestive)</option>
+            <option value="Pulmonologist">Pulmonologist (Lungs)</option>
+            <option value="Nephrologist">Nephrologist (Kidney)</option>
+            <option value="Endocrinologist">Endocrinologist (Hormones)</option>
+            <option value="Rheumatologist">Rheumatologist (Joints)</option>
+            <option value="Surgeon">General Surgeon</option>
+            <option value="Anesthesiologist">Anesthesiologist</option>
+            <option value="Radiologist">Radiologist</option>
+            <option value="Pathologist">Pathologist</option>
+            <option value="Physiotherapist">Physiotherapist</option>
+        </select>
+    </div>
+    <div class="minimal-field">
+        <label>Department <span class="required">*</span></label>
+        <select id="department" class="minimal-select" required>
+            <option value="">Select Department</option>
+            <option value="General Medicine">General Medicine</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Orthopedics">Orthopedics</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Gynecology">Gynecology</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="ENT">ENT (Ear, Nose, Throat)</option>
+            <option value="Ophthalmology">Ophthalmology</option>
+            <option value="Psychiatry">Psychiatry</option>
+            <option value="Dental">Dental</option>
+            <option value="Urology">Urology</option>
+            <option value="Oncology">Oncology</option>
+            <option value="Gastroenterology">Gastroenterology</option>
+            <option value="Pulmonology">Pulmonology</option>
+            <option value="Nephrology">Nephrology</option>
+            <option value="Endocrinology">Endocrinology</option>
+            <option value="Rheumatology">Rheumatology</option>
+            <option value="General Surgery">General Surgery</option>
+            <option value="Emergency">Emergency</option>
+            <option value="ICU">ICU</option>
+            <option value="Radiology">Radiology</option>
+            <option value="Pathology">Pathology</option>
+            <option value="Physiotherapy">Physiotherapy</option>
+        </select>
+    </div>
+</div>
+
+                    
+
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" id="phone" class="minimal-input" 
+                                   placeholder="10-digit number" required>
+                        </div>
+                        <div class="minimal-field">
+                            <label>Email</label>
+                            <input type="email" id="email" class="minimal-input" 
+                                   placeholder="doctor@hospital.com">
+                        </div>
+                    </div>
+
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="experience" class="minimal-input" 
+                                   placeholder="e.g. 10" min="0" max="70">
+                        </div>
+                        <div class="minimal-field">
+                            <label>Availability</label>
+                            <select id="availability" class="minimal-select">
+                                <option value="Available">Available</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Busy">Busy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="minimal-actions">
+                        <button type="submit" class="btn-minimal-primary">
+                            Save Doctor
+                        </button>
+                        <button type="button" class="btn-minimal-secondary" onclick="resetForm()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Doctor List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Doctors List</h3>
+                    <input type="text" id="searchInput" placeholder="Search doctors..." onkeyup="searchDoctors()">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Department</th>
+                                <th>Phone</th>
+                                <th>Experience</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorTableBody">
+                            <tr><td colspan="8" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/doctors';
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function loadDoctors() {
+            try {
+                const res = await fetch(API_URL);
+                const doctors = await res.json();
+                displayDoctors(doctors);
+            } catch (error) {
+                const tbody = document.getElementById('doctorTableBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="no-data" style="color:red;">⚠️ Backend not running!</td></tr>';
+            }
+        }
+
+        function displayDoctors(doctors) {
+            const tbody = document.getElementById('doctorTableBody');
+            if (!tbody) return;
+
+            if (doctors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No doctors found. Add one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = doctors.map(d => `
+                <tr>
+                    <td>${d.id}</td>
+                    <td><strong>${d.name || ''}</strong></td>
+                    <td>${d.specialization || '-'}</td>
+                    <td>${d.department || '-'}</td>
+                    <td>${d.phone || '-'}</td>
+                    <td>${d.experience ? d.experience + ' yrs' : '-'}</td>
+                    <td><span class="status-badge status-available">${d.availability || 'Available'}</span></td>
+                    <td>
+                        <button class="btn-edit" onclick="editDoctor(${d.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteDoctor(${d.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function saveDoctor(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('doctorId').value;
+            const doctor = {
+                name: document.getElementById('name').value,
+                specialization: document.getElementById('specialization').value,
+                department: document.getElementById('department').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                experience: parseInt(document.getElementById('experience').value) || 0,
+                availability: document.getElementById('availability').value
+            };
+
+            try {
+                const url = id ? `${API_URL}/${id}` : API_URL;
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(doctor)
+                });
+
+                if (res.ok) {
+                    showToast(id ? '✅ Doctor updated!' : '✅ Doctor added!');
+                    resetForm();
+                    loadDoctors();
+                } else {
+                    showToast('❌ Error saving!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        async function editDoctor(id) {
+            try {
+                const res = await fetch(API_URL);
+                const doctors = await res.json();
+                const d = doctors.find(x => x.id === id);
+                
+                if (!d) return;
+
+                document.getElementById('doctorId').value = d.id;
+                document.getElementById('name').value = d.name || '';
+                document.getElementById('specialization').value = d.specialization || '';
+                document.getElementById('department').value = d.department || '';
+                document.getElementById('phone').value = d.phone || '';
+                document.getElementById('email').value = d.email || '';
+                document.getElementById('experience').value = d.experience || '';
+                document.getElementById('availability').value = d.availability || 'Available';
+
+                document.getElementById('formTitle').textContent = 'Edit Doctor';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('❌ Error loading!', true);
+            }
+        }
+
+        async function deleteDoctor(id) {
+            if (!confirm('Delete this doctor?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('✅ Doctor deleted!');
+                    loadDoctors();
+                } else {
+                    showToast('❌ Error deleting!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('doctorForm').reset();
+            document.getElementById('doctorId').value = '';
+            document.getElementById('formTitle').textContent = 'Add New Doctor';
+        }
+
+        function searchDoctors() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#doctorTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDoctors();
+        });
+    </script>
+</body>
+</html>

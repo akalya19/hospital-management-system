@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ GLASSMORPHISM FORM ============ */
+        .glass-wrapper {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            overflow: hidden;
+        }
+
+        .glass-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -80px;
+            right: -80px;
+        }
+
+        .glass-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            bottom: -60px;
+            left: -60px;
+        }
+
+        .glass-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            z-index: 1;
+        }
+
+        .glass-title {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            letter-spacing: 0.3px;
+        }
+
+        .glass-title i {
+            margin-right: 8px;
+        }
+
+        .glass-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .glass-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .glass-field label {
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .glass-field label .icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .glass-field label .required {
+            color: #f44336;
+            margin-left: 2px;
+        }
+
+        .glass-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e8eaf6;
+            border-radius: 12px;
+            background: #fafbff;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .glass-input:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .glass-input::placeholder {
+            color: #b0b0b0;
+        }
+
+        .glass-select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e8eaf6;
+            border-radius: 12px;
+            background: #fafbff;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px;
+            padding-right: 45px;
+        }
+
+        .glass-select:focus {
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .glass-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px dashed #c5cae9;
+        }
+
+        .glass-btn-save {
+            flex: 1;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .glass-btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .glass-btn-cancel {
+            flex: 1;
+            padding: 16px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .glass-btn-cancel:hover {
+            border-color: #999;
+            color: #333;
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .glass-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-wrapper {
+                padding: 20px 15px;
+            }
+
+            .glass-card {
+                padding: 25px 20px;
+            }
+
+            .glass-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Check -->
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html" class="active"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Ambulance</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Ambulance Management</h1>
+                <p>Manage all ambulances in the hospital</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon"><i class="fas fa-ambulance"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalAmbulances">0</h3>
+                        <span>Total Ambulances</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-green">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <h3 id="availableAmbulances">0</h3>
+                        <span>Available</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon"><i class="fas fa-road"></i></div>
+                    <div class="stat-info">
+                        <h3 id="onTripAmbulances">0</h3>
+                        <span>On Trip</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-red">
+                    <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                    <div class="stat-info">
+                        <h3 id="maintenanceAmbulances">0</h3>
+                        <span>Under Maintenance</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glassmorphism Add Ambulance Form -->
+            <div class="glass-wrapper">
+                <div class="glass-card">
+                    <div class="glass-title">
+                        <i class="fas fa-magic"></i>
+                        <span id="formTitle">Add New Ambulance</span>
+                    </div>
+
+                    <form id="ambulanceForm" onsubmit="saveAmbulance(event)">
+                        <input type="hidden" id="ambulanceId">
+
+                        <div class="glass-grid">
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-ambulance"></i></span>
+                                    Ambulance Number <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="ambulanceNumber" 
+                                       class="glass-input" 
+                                       placeholder="e.g. AMB-001"
+                                       required
+                                       style="text-transform: uppercase;">
+                            </div>
+
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                                    Ambulance Type <span class="required">*</span>
+                                </label>
+                                <select id="ambulanceType" class="glass-select" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Basic">Basic</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="ICU">ICU</option>
+                                </select>
+                            </div>
+
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-user"></i></span>
+                                    Driver Name <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="driverName" 
+                                       class="glass-input" 
+                                       placeholder="Driver name"
+                                       required
+                                       style="text-transform: capitalize;">
+                            </div>
+
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-phone"></i></span>
+                                    Driver Phone <span class="required">*</span>
+                                </label>
+                                <input type="tel" 
+                                       id="driverPhone" 
+                                       class="glass-input" 
+                                       placeholder="9876543210"
+                                       required
+                                       pattern="[0-9]{10}"
+                                       maxlength="10">
+                            </div>
+
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-flag"></i></span>
+                                    Status <span class="required">*</span>
+                                </label>
+                                <select id="ambulanceStatus" class="glass-select" required>
+                                    <option value="Available">Available</option>
+                                    <option value="On Trip">On Trip</option>
+                                    <option value="Under Maintenance">Under Maintenance</option>
+                                </select>
+                            </div>
+
+                            <div class="glass-field">
+                                <label>
+                                    <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                                    Current Location
+                                </label>
+                                <input type="text" 
+                                       id="currentLocation" 
+                                       class="glass-input" 
+                                       placeholder="e.g. Chennai"
+                                       style="text-transform: capitalize;">
+                            </div>
+                        </div>
+
+                        <div class="glass-actions">
+                            <button type="submit" class="glass-btn-save">
+                                <i class="fas fa-save"></i> Save Ambulance
+                            </button>
+                            <button type="button" class="glass-btn-cancel" onclick="resetForm()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ambulance List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Ambulances List</h3>
+                    <input type="text" id="searchInput" placeholder="Search ambulances..." onkeyup="searchAmbulances()">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Number</th>
+                                <th>Type</th>
+                                <th>Driver</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ambulanceTableBody">
+                            <tr><td colspan="8" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/ambulances';
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function loadAmbulances() {
+            try {
+                const res = await fetch(API_URL);
+                const ambulances = await res.json();
+                displayAmbulances(ambulances);
+                updateStats(ambulances);
+            } catch (error) {
+                const tbody = document.getElementById('ambulanceTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="no-data" style="color:red;">⚠️ Backend not running!</td></tr>';
+                }
+            }
+        }
+
+        function displayAmbulances(ambulances) {
+            const tbody = document.getElementById('ambulanceTableBody');
+            if (!tbody) return;
+
+            if (ambulances.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No ambulances found. Add one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = ambulances.map(a => {
+                let statusClass = 'status-available';
+                if (a.status === 'On Trip') statusClass = 'status-ontrip';
+                if (a.status === 'Under Maintenance') statusClass = 'status-maintenance';
+
+                return `
+                <tr>
+                    <td>${a.id}</td>
+                    <td><strong>${a.ambulance_number || a.ambulanceNumber || ''}</strong></td>
+                    <td>${a.ambulance_type || a.ambulanceType || ''}</td>
+                    <td>${a.driver_name || a.driverName || ''}</td>
+                    <td>${a.driver_phone || a.driverPhone || ''}</td>
+                    <td><span class="status-badge ${statusClass}">${a.status}</span></td>
+                    <td>${a.current_location || a.currentLocation || '-'}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editAmbulance(${a.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteAmbulance(${a.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats(ambulances) {
+            const total = ambulances.length;
+            const available = ambulances.filter(a => a.status === 'Available').length;
+            const onTrip = ambulances.filter(a => a.status === 'On Trip').length;
+            const maintenance = ambulances.filter(a => a.status === 'Under Maintenance').length;
+
+            document.getElementById('totalAmbulances').textContent = total;
+            document.getElementById('availableAmbulances').textContent = available;
+            document.getElementById('onTripAmbulances').textContent = onTrip;
+            document.getElementById('maintenanceAmbulances').textContent = maintenance;
+        }
+
+        async function saveAmbulance(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('ambulanceId').value;
+            const ambulance = {
+                ambulanceNumber: document.getElementById('ambulanceNumber').value.toUpperCase(),
+                ambulanceType: document.getElementById('ambulanceType').value,
+                driverName: document.getElementById('driverName').value,
+                driverPhone: document.getElementById('driverPhone').value,
+                status: document.getElementById('ambulanceStatus').value,
+                currentLocation: document.getElementById('currentLocation').value
+            };
+
+            try {
+                const url = id ? `${API_URL}/${id}` : API_URL;
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ambulance)
+                });
+
+                if (res.ok) {
+                    showToast(id ? '✅ Ambulance updated!' : '✅ Ambulance added!');
+                    resetForm();
+                    loadAmbulances();
+                } else {
+                    showToast('❌ Error saving!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        async function editAmbulance(id) {
+            try {
+                const res = await fetch(API_URL);
+                const ambulances = await res.json();
+                const a = ambulances.find(x => x.id === id);
+                
+                if (!a) return;
+
+                document.getElementById('ambulanceId').value = a.id;
+                document.getElementById('ambulanceNumber').value = a.ambulance_number || a.ambulanceNumber || '';
+                document.getElementById('ambulanceType').value = a.ambulance_type || a.ambulanceType || '';
+                document.getElementById('driverName').value = a.driver_name || a.driverName || '';
+                document.getElementById('driverPhone').value = a.driver_phone || a.driverPhone || '';
+                document.getElementById('ambulanceStatus').value = a.status || 'Available';
+                document.getElementById('currentLocation').value = a.current_location || a.currentLocation || '';
+
+                document.getElementById('formTitle').textContent = 'Edit Ambulance';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('❌ Error loading!', true);
+            }
+        }
+
+        async function deleteAmbulance(id) {
+            if (!confirm('Delete this ambulance?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('✅ Ambulance deleted!');
+                    loadAmbulances();
+                } else {
+                    showToast('❌ Error deleting!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('ambulanceForm').reset();
+            document.getElementById('ambulanceId').value = '';
+            document.getElementById('formTitle').textContent = 'Add New Ambulance';
+        }
+
+        function searchAmbulances() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#ambulanceTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAmbulances();
+        });
+    </script>
+</body>
+</html>

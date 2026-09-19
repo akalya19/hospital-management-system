@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - Hospital Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .minimal-form { max-width: 900px; }
+        .minimal-form h3 {
+            color: #1a237e;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        .minimal-field { margin-bottom: 30px; }
+        .minimal-field label {
+            display: block;
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .minimal-field label .required { color: #f44336; margin-left: 3px; }
+        .minimal-input, .minimal-select, .minimal-textarea {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #c5cae9;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .minimal-input:focus, .minimal-select:focus, .minimal-textarea:focus {
+            outline: none;
+            border-bottom-color: #3f51b5;
+        }
+        .minimal-input::placeholder, .minimal-textarea::placeholder {
+            color: #b0b0b0;
+            font-style: italic;
+        }
+        .minimal-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f51b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+            background-size: 18px;
+            padding-right: 25px;
+        }
+        .minimal-textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .minimal-row { display: grid; gap: 40px; margin-bottom: 30px; }
+        .minimal-row-2 { grid-template-columns: 1fr 1fr; }
+        .minimal-row-full { grid-template-columns: 1fr; }
+        .minimal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e8eaf6;
+        }
+        .btn-minimal-primary {
+            padding: 14px 35px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-minimal-primary:hover {
+            background: #0d1642;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+        }
+        .btn-minimal-secondary {
+            padding: 14px 35px;
+            background: transparent;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-minimal-secondary:hover { border-color: #999; color: #333; }
+        
+        /* Status badges */
+        .status-pending { background: #FFF3E0; color: #E65100; }
+        .status-confirmed { background: #E3F2FD; color: #0D47A1; }
+        .status-completed { background: #E8F5E9; color: #2E7D32; }
+        .status-cancelled { background: #FFEBEE; color: #C62828; }
+        
+        @media (max-width: 600px) {
+            .minimal-row-2 { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-hospital"></i>
+            <h3>HMS</h3>
+            <p>Hospital Management</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="patients.html"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="appointments.html" class="active"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="ambulance.html"><i class="fas fa-ambulance"></i> Ambulance</a></li>
+            <li><a href="billing.html"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4>Appointments</h4>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Appointment Management</h1>
+                <p>Book and manage patient appointments</p>
+            </div>
+
+            <!-- Add Appointment Form -->
+            <div class="card">
+                <form id="appointmentForm" onsubmit="saveAppointment(event)" class="minimal-form">
+                    <h3 id="formTitle">Book New Appointment</h3>
+                    <input type="hidden" id="appointmentId">
+
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Patient Name <span class="required">*</span></label>
+                            <input type="text" id="patientName" class="minimal-input" 
+                                   placeholder="Enter patient name" required>
+                        </div>
+                        <div class="minimal-field">
+                            <label>Doctor Name <span class="required">*</span></label>
+                            <input type="text" id="doctorName" class="minimal-input" 
+                                   placeholder="Enter doctor name" required>
+                        </div>
+                    </div>
+
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Appointment Date <span class="required">*</span></label>
+                            <input type="date" id="appointmentDate" class="minimal-input" required>
+                        </div>
+                        <div class="minimal-field">
+                            <label>Appointment Time <span class="required">*</span></label>
+                            <input type="time" id="appointmentTime" class="minimal-input" required>
+                        </div>
+                    </div>
+
+                    <div class="minimal-row minimal-row-2">
+                        <div class="minimal-field">
+                            <label>Status <span class="required">*</span></label>
+                            <select id="status" class="minimal-select" required>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="minimal-field">
+                            <label>Notes</label>
+                            <input type="text" id="notes" class="minimal-input" 
+                                   placeholder="Optional notes">
+                        </div>
+                    </div>
+
+                    <div class="minimal-actions">
+                        <button type="submit" class="btn-minimal-primary">
+                            Book Appointment
+                        </button>
+                        <button type="button" class="btn-minimal-secondary" onclick="resetForm()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Appointment List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Appointments List</h3>
+                    <input type="text" id="searchInput" placeholder="Search appointments..." onkeyup="searchAppointments()">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentTableBody">
+                            <tr><td colspan="7" class="no-data">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/appointments';
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function loadAppointments() {
+            try {
+                const res = await fetch(API_URL);
+                const appointments = await res.json();
+                displayAppointments(appointments);
+            } catch (error) {
+                const tbody = document.getElementById('appointmentTableBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="no-data" style="color:red;">⚠️ Backend not running!</td></tr>';
+            }
+        }
+
+        function displayAppointments(appointments) {
+            const tbody = document.getElementById('appointmentTableBody');
+            if (!tbody) return;
+
+            if (appointments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">No appointments found. Book one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = appointments.map(a => {
+                let statusClass = 'status-pending';
+                if (a.status === 'Confirmed') statusClass = 'status-confirmed';
+                if (a.status === 'Completed') statusClass = 'status-completed';
+                if (a.status === 'Cancelled') statusClass = 'status-cancelled';
+
+                // Format date
+                const dateStr = a.appointment_date ? a.appointment_date.split('T')[0] : '';
+
+                return `
+                <tr>
+                    <td>${a.id}</td>
+                    <td><strong>${a.patient_name || ''}</strong></td>
+                    <td>${a.doctor_name || ''}</td>
+                    <td>${dateStr}</td>
+                    <td>${a.appointment_time || ''}</td>
+                    <td><span class="status-badge ${statusClass}">${a.status}</span></td>
+                    <td>
+                        <button class="btn-edit" onclick="editAppointment(${a.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteAppointment(${a.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        async function saveAppointment(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('appointmentId').value;
+            const appointment = {
+                patientName: document.getElementById('patientName').value,
+                doctorName: document.getElementById('doctorName').value,
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                status: document.getElementById('status').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const url = id ? `${API_URL}/${id}` : API_URL;
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(appointment)
+                });
+
+                if (res.ok) {
+                    showToast(id ? '✅ Appointment updated!' : '✅ Appointment booked!');
+                    resetForm();
+                    loadAppointments();
+                } else {
+                    const err = await res.json();
+                    showToast('❌ ' + (err.error || 'Error saving!'), true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        async function editAppointment(id) {
+            try {
+                const res = await fetch(API_URL);
+                const appointments = await res.json();
+                const a = appointments.find(x => x.id === id);
+                
+                if (!a) return;
+
+                document.getElementById('appointmentId').value = a.id;
+                document.getElementById('patientName').value = a.patient_name || '';
+                document.getElementById('doctorName').value = a.doctor_name || '';
+                document.getElementById('appointmentDate').value = a.appointment_date ? a.appointment_date.split('T')[0] : '';
+                document.getElementById('appointmentTime').value = a.appointment_time || '';
+                document.getElementById('status').value = a.status || 'Pending';
+                document.getElementById('notes').value = a.notes || '';
+
+                document.getElementById('formTitle').textContent = 'Edit Appointment';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast('❌ Error loading!', true);
+            }
+        }
+
+        async function deleteAppointment(id) {
+            if (!confirm('Delete this appointment?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('✅ Appointment deleted!');
+                    loadAppointments();
+                } else {
+                    showToast('❌ Error deleting!', true);
+                }
+            } catch (error) {
+                showToast('❌ Backend not running!', true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('appointmentId').value = '';
+            document.getElementById('formTitle').textContent = 'Book New Appointment';
+        }
+
+        function searchAppointments() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#appointmentTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppointments();
+        });
+    </script>
+</body>
+</html>
